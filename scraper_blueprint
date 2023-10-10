@@ -1,0 +1,51 @@
+import requests  # requests is useful to 'copy' the website data.
+from bs4 import BeautifulSoup  # bs is helping as sorting the data and find the wanted data that we are locking for(also automatically)
+
+
+# this function will use the requests lib and make the url assessable and readable for as
+def get_url(url):
+    web = requests.get(url)
+    if web.status_code == 200:
+        return web.text
+
+# here we will chose the url that we want to scrap and put him in the 'get_url' function
+website=input("enter a website: ")
+url_to_scrape = f"https://{website}"
+doc_html = get_url(url_to_scrape)
+
+# with bs we will grab the data in the url and scrap the tags that we want
+soup = BeautifulSoup(doc_html, 'html.parser')
+all_links = soup.find_all('a')
+categories=[]
+for a in soup.find_all('a'):
+    categories.append(a.text)
+print(categories)
+
+# in this for loop we will scrap all the urls paths
+for link in all_links:
+    if 'href' in link.attrs:
+        print(str(link.attrs['href']) + '\n')
+
+# in this for loop we will scrap all the image links  from the url
+images = soup.find_all('img')
+count = 1
+for item in images:
+    if ('.jpg' in item.get('src', [])):
+
+        web_img = requests.get(item.get('src'))
+        file1 = open(f'‘insert path to a images folder’\\{count}.jpg', 'wb')
+        file1.write(web_img.content)
+        count += 1
+        file1.close()
+
+# in this for loop we will scrap all the pdf files from the url
+pdfs = soup.find_all('a')
+p = 1
+for pdf in pdfs:
+    if ('.pdf' in pdf.get('href', [])):
+
+        r = requests.get(pdf.get('href'))
+        new_pdf = open(f'‘insert path to a pdf folder’\\{p}.pdf', 'wb')
+        new_pdf.write(r.content)
+        p += 1
+        new_pdf.close()
